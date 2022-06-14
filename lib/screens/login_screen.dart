@@ -1,3 +1,6 @@
+import 'package:auth_app/screens/signup_screen.dart';
+import 'package:auth_app/widgets/custom_button.dart';
+import 'package:auth_app/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,12 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Login"),
-        leading: new Icon(Icons.person_outline_outlined),
-        titleSpacing: 0,
-        elevation: 0,
-      ),
       body: new Container(
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(
@@ -51,21 +48,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         letterSpacing: 0.0),
                   ),
                 ),
-                getTextFormField(
+                new CustomTextFormField(
                     hintText: "Enter your email", controller: _emailController),
                 new SizedBox(
                   height: 8,
                 ),
-                getTextFormField(
+                new CustomTextFormField(
                     hintText: "Enter your password",
                     isPassword: true,
                     controller: _passwordController),
                 new SizedBox(
                   height: 16,
                 ),
-                getButton("Log in", () {
-                  validateAndLogin();
-                }),
+                new CustomButton(
+                    text: "Log in",
+                    onTap: () {
+                      validateAndLogin();
+                    }),
                 new Container(
                     margin: EdgeInsets.only(top: 16),
                     child: new Row(
@@ -74,7 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           new Text("Don't have any account?"),
                           new TextButton(
                               onPressed: () {
-                                print("Signup");
+                                Navigator.of(context)
+                                    .push(new MaterialPageRoute(
+                                  builder: (context) => new SignupScreen(),
+                                ));
                               },
                               child: new Text(
                                 "Sign up",
@@ -87,40 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
             )),
       ),
     );
-  }
-
-  Widget getTextFormField(
-      {required String hintText,
-      bool isPassword = false,
-      required TextEditingController controller}) {
-    return new TextFormField(
-      controller: controller,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Please ${hintText.replaceRange(0, 1, hintText[0].toLowerCase())}";
-        }
-        return null;
-      },
-      obscureText: isPassword,
-      obscuringCharacter: "*",
-      decoration: new InputDecoration(
-          hintText: hintText,
-          border: new OutlineInputBorder(),
-          errorBorder: new OutlineInputBorder(
-              borderSide: new BorderSide(color: Colors.red))),
-    );
-  }
-
-  Widget getButton(String text, VoidCallback? onTap) {
-    return new ElevatedButton(
-        onPressed: onTap,
-        child: new Container(
-          margin: EdgeInsets.all(16),
-          child: new Text(
-            "Log in",
-            style: new TextStyle(fontSize: 16),
-          ),
-        ));
   }
 
   void validateAndLogin() {
