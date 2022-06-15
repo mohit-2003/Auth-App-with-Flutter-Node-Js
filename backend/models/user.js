@@ -23,12 +23,6 @@ const userSchema = mongoose.Schema({
     type: String,
     required: [true, "Please enter passoword"],
     trim: true,
-    validate: {
-      validator: (value) => {
-        return value.length > 5;
-      },
-      message: (props) => "password must be minimum 6 digit",
-    },
   },
 });
 

@@ -1,3 +1,5 @@
+import 'package:auth_app/screens/home_screen.dart';
+import 'package:auth_app/services/auth_services.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/custom_button.dart';
@@ -94,13 +96,21 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void validateAndSignup() {
+  void validateAndSignup() async {
     if (_formKey.currentState!.validate()) {
       // login
       final name = _nameController.text;
       final email = _emailController.text;
       final password = _passwordController.text;
-      print("$email - $password");
+      String res = await AuthServices.signUp(
+          name: name, email: email, password: password);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(new SnackBar(content: new Text(res)));
+      if (res.contains("successfully")) {
+        Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (context) => new HomeScreen(),
+        ));
+      }
     }
   }
 }

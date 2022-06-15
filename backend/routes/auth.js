@@ -19,7 +19,7 @@ router.post("/signup", async (req, res) => {
     if (dbUser) {
       return res
         .status(400)
-        .json({ message: "User with this email is already exist" });
+        .json({ error: "User with this email is already exist" });
     }
     // creating hash of password
     var salt = bcrypt.genSaltSync(10);
@@ -47,16 +47,15 @@ router.post("/signin", async (req, res) => {
     });
 
     const dbUser = await User.findOne({ email: user.email });
-    console.log(dbUser);
     // if user is not exist
     if (!dbUser) {
-      return res.status(400).json({ message: "User not exist" });
+      return res.status(400).json({ error: "User not exist" });
     }
 
     // verifying client password with database hash password
     let isPasswordMatched = bcrypt.compareSync(user.password, dbUser.password);
     if (!isPasswordMatched) {
-      return res.status(400).json({ message: "Incorrect password" });
+      return res.status(400).json({ error: "Incorrect password" });
     }
 
     // creating a jwt token

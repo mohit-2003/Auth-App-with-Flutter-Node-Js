@@ -1,7 +1,10 @@
 import 'package:auth_app/screens/signup_screen.dart';
+import 'package:auth_app/services/auth_services.dart';
 import 'package:auth_app/widgets/custom_button.dart';
 import 'package:auth_app/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
+
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -91,12 +94,20 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void validateAndLogin() {
+  void validateAndLogin() async {
     if (_formKey.currentState!.validate()) {
       // login
       final email = _emailController.text;
       final password = _passwordController.text;
-      print("$email - $password");
+      final String res =
+          await AuthServices.signIn(email: email, password: password);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(new SnackBar(content: new Text(res)));
+      if (res.contains("successfully")) {
+        Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (context) => new HomeScreen(),
+        ));
+      }
     }
   }
 }
