@@ -12,6 +12,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = new TextEditingController();
   final _emailController = new TextEditingController();
   final _passwordController = new TextEditingController();
 
@@ -49,7 +50,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 new CustomTextFormField(
-                    hintText: "Enter your name", controller: _emailController),
+                    hintText: "Enter your name", controller: _nameController),
                 new SizedBox(
                   height: 8,
                 ),
@@ -96,6 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
   void validateAndSignup() {
     if (_formKey.currentState!.validate()) {
       // login
+      final name = _nameController.text;
       final email = _emailController.text;
       final password = _passwordController.text;
       print("$email - $password");
