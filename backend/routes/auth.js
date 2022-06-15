@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // creating account/sign up
 router.post("/signup", async (req, res) => {
@@ -39,33 +40,37 @@ router.post("/signup", async (req, res) => {
 
 // sign in
 router.post("/signin", async (req, res) => {
-  const user = new User({
-    email: req.body.email,
-    password: req.body.password,
-  });
+  try {
+    const user = new User({
+      email: req.body.email,
+      password: req.body.password,
+    });
 
-  const dbUser = await User.findOne({ email: user.email });
-  console.log(dbUser);
-  // if user is not exist
-  if (!dbUser) {
-    return res.status(400).json({ message: "User not exist" });
+    const dbUser = await User.findOne({ email: user.email });
+    console.log(dbUser);
+    // if user is not exist
+    if (!dbUser) {
+      return res.status(400).json({ message: "User not exist" });
+    }
+
+    // verifying client password with database hash password
+    let isPasswordMatched = bcrypt.compareSync(user.password, dbUser.password);
+    if (!isPasswordMatched) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
+
+    // creating a jwt token
+    const jwtToken = jwt.sign({ id: dbUser._id }, process.env.JWT_KEY);
+
+    // returning user name, email and jwt token
+    return res.json({
+      name: dbUser.name,
+      email: dbUser.email,
+      token: jwtToken,
+    });
+  } catch (error) {
+    return res.send(500).json({ error: error.message });
   }
-
-  // verifying client password with database hash password
-  let isPasswordMatched = bcrypt.compareSync(user.password, dbUser.password);
-  if (!isPasswordMatched) {
-    res.status(400).json({ message: "Incorrect password" });
-  }
-
-  // creating a jwt token
-  const jwtToken = jwt.sign({ id: dbUser._id }, process.env.JWT_KEY);
-
-  // returning user name, email and jwt token
-  return res.status(200).json({
-    name: dbUser.name,
-    email: dbUser.email,
-    token: jwtToken,
-  });
 });
 
 module.exports = router;
